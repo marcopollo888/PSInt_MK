@@ -125,3 +125,20 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS':
+    'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 30,
+    'DEFAULT_FILTER_BACKEND': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.OrderingFilter',
+        'rest_framework.filters.SearchFilter'
+    ),
+    'DEFAUT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication'
+        'rest_framework.authentication.SessionAuthentication'
+    )
+}
+
+
