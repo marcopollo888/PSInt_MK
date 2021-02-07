@@ -8,21 +8,19 @@ from .models import Klient, Auto, Naprawa
 from .serializers import *
 
 
-class KlientList(generics.ListAPIView):
+class KlientList(generics.ListCreateAPIView):
     queryset = Klient.objects.all()
     serializer_class = KlientSerializer
     search_fields = ['Imie', 'Nazwisko']
     filterset_fields = ['Imie', 'Nazwisko']
     ordering_fields = ['Imie', 'Nazwisko']
     name = 'klient-list'
-    permission_classes = [permissions.IsAuthenticated]
 
 
-class KlientDetail(generics.RetrieveAPIView):
+class KlientDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = KlientSerializer
     name = 'klient-detail'
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class NaprawaFilter(django_filters.FilterSet):
@@ -33,6 +31,7 @@ class NaprawaFilter(django_filters.FilterSet):
         model = Naprawa
         fields = ['from_DataZlecenia', 'to_DataZlecenia']
 
+
 class AutoList(generics.ListCreateAPIView):
     queryset = Auto.objects.all()
     serializer_class = AutoSerializer
@@ -40,7 +39,6 @@ class AutoList(generics.ListCreateAPIView):
     filterset_fields = ['NrRejestracyjny']
     ordering_fields = ['NrRejestracyjny']
     name = 'auto-list'
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class AutoDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -50,7 +48,7 @@ class AutoDetail(generics.RetrieveUpdateDestroyAPIView):
     filter_fields = ['NrRejestracyjny']
     search_fields = ['NrRejestracyjny']
     ordering_fields = ['NrRejestracyjny']
-    permission_classes = [permissions.IsAuthenticated]
+
 
 class NaprawaList(generics.ListCreateAPIView):
     queryset = Naprawa.objects.all()
@@ -59,16 +57,15 @@ class NaprawaList(generics.ListCreateAPIView):
     filter_fields = ['DataZlecenia']
     search_fields = ['DataZlecenia']
     ordering_fields = ['DataZlecenia']
-    permission_classes = [permissions.IsAuthenticated]
+
 
 # def perform_create(self, serializer):
 # serializer.save(owner=self.request.user)
 
-class NaprawaDetail(generics.RetrieveAPIView):
+class NaprawaDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Naprawa.objects.all()
     serializer_class = NaprawaSerializer
     name = 'naprawa-detail'
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class ApiRoot(generics.GenericAPIView):
@@ -79,5 +76,3 @@ class ApiRoot(generics.GenericAPIView):
                          'auta': reverse(AutoList.name, request=request),
                          'naprawy': reverse(NaprawaList.name, request=request)
                          })
-
-

@@ -18,11 +18,13 @@ from django.urls import path
 from anglomat import views
 
 urlpatterns = [
-    path('klienci', views.KlientList.as_view(), name=views.KlientList.name),
-    path('auta', views.AutoList.as_view(), name=views.AutoList.name),
-    path('naprawy/', views.NaprawaList.as_view(), name=views.NaprawaList.name),
-    #path('users/<int:pk>/', views.UserDetail.as_view(), name=views.UserDetail.name),
     path('', views.ApiRoot.as_view(), name=views.ApiRoot.name),
+    path('klienci/', views.KlientList.as_view(), name=views.KlientList.name),
+    path('klienci/<int:pk>', views.KlientDetail.as_view(), name=views.KlientDetail.name),
+    path('auta', views.AutoList.as_view(), name=views.AutoList.name),
+    path('auta/<int:pk>', views.AutoDetail.as_view(), name=views.AutoDetail.name),
+    path('naprawy/', views.NaprawaList.as_view(), name=views.NaprawaList.name),
+    path('naprawy/<int:pk>', views.NaprawaDetail.as_view(), name=views.NaprawaDetail.name),
 ]
 
 # urlpatterns += [ path('api-auth/', include('rest_framework.urls')), ]
