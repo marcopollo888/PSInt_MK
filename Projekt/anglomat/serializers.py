@@ -1,27 +1,26 @@
 from rest_framework import serializers
-from .models import Verb, Numeral
 
-class VerbSerializer(serializers.HyperlinkedModelSerializer):
-    verbs = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name="verb-detail")
-    owner = serializers.ReadOnlyField(source='owner.username')
+from .models import *
+
+
+class KlientSerializer(serializers.HyperlinkedModelSerializer):
+
     class Meta:
-        model = Verb
-        fields = ['pk','infinitive', 'past_tense','past_participle','translation']
+        model = Klient
+        fields = ['PESEL', 'Imie', 'Nazwisko', 'Telefon']
 
 
-class NumeralSerializer(serializers.HyperlinkedModelSerializer):
-    numerals = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='numeral-detail')
+class AutoSerializer(serializers.HyperlinkedModelSerializer):
+
     class Meta:
-        model = Numeral
-        fields = ['pk','cardinal_number','ordinal_number', 'translation']
+        model = Auto
+        fields = ['NrRejestracyjny','Marka','Model', 'VIN','DataPierwszejRejestracji']
 
-class UserVerbSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Verb
-        fields = ['url','infinitive']
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    verbs = UserVerbSerializer(many=True,read_only=True)
+class NaprawaSerializer(serializers.HyperlinkedModelSerializer):
+    IdKlienta = serializers.SlugRelatedField(queryset=Klient.objects.all(), slug_field='PESEL')
+    IdAuta = serializers.SlugRelatedField(queryset=Auto.objects.all(), slug_field='NrRejestracyjny')
     class Meta:
-        model = Verb
-        fields =['url','pk','username','verbs']
+        model = Naprawa
+        fields = ['PESEL', 'NrRejestracyjny', 'Cena', 'DataZlecenia']
+

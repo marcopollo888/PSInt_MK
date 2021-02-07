@@ -1,18 +1,28 @@
 from django.db import models
 
-# Create your models here.
+class Klient(models.Model):
+    PESEL = models.CharField(max_length=11, primary_key=True, unique=True)
+    Imie = models.CharField(max_length=40)
+    Nazwisko = models.CharField(max_length=40)
+    Telefon = models.CharField(max_length=12)
 
-class Verb(models.Model):
-    infinitive = models.CharField(max_length=200)
-    past_tense = models.CharField(max_length=200)
-    past_participle = models.CharField(max_length=200)
-    translation = models.CharField(max_length=200)
-    owner = models.ForeignKey('auth.User', related_name='verbs', on_delete=models.CASCADE)
+    class Meta:
+        ordering = ('Nazwisko',)
 
-class Numeral(models.Model):
-    cardinal_number = models.CharField(max_length=200)
-    ordinal_number = models.CharField(max_length=200)
-    translation = models.CharField(max_length=200)
+    def __str__(self):
+        return self.Imie+' '+self.Nazwisko
 
-#class Results(models.Model)
-    #score = models.IntegerField()
+
+class Auto(models.Model):
+    NrRejestracyjny = models.CharField(max_length=8, primary_key = True, unique=True)
+    Marka = models.CharField(max_length=30)
+    Model = models.CharField(max_length=30)
+    VIN = models.CharField(max_length=15, unique=True)
+    DataPierwszejRejestracji = models.DateField()
+
+class Naprawa(models.Model):
+ IdKlienta = models.ForeignKey(Klient, on_delete=models.CASCADE, db_column='PESEL')
+ IdAuta = models.ForeignKey(Auto, on_delete=models.CASCADE, db_column='NrRejestracyjny')
+ Cena = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=False)
+ DataZlecenia = models.DateField()
+

@@ -1,92 +1,83 @@
-from django.shortcuts import render
-from .models import Verb, Numeral
-from .serializers import VerbSerializer, NumeralSerializer, UserSerializer
-from rest_framework import permissions
-from rest_framework.reverse import reverse
-from rest_framework.response import Response
-from django_filters import AllValuesFilter, DateTimeFilter, NumberFilter, FilterSet
 from django.contrib.auth.models import User
+import django_filters
 from rest_framework import generics
+from rest_framework import permissions
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+from .models import Klient, Auto, Naprawa
+from .serializers import *
 
-class UserList(generics.ListAPIView):
+
+class KlientList(generics.ListAPIView):
+    queryset = Klient.objects.all()
+    serializer_class = KlientSerializer
+    search_fields = ['Imie', 'Nazwisko']
+    filterset_fields = ['Imie', 'Nazwisko']
+    ordering_fields = ['Imie', 'Nazwisko']
+    name = 'klient-list'
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class KlientDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
-    name = 'user-list'
+    serializer_class = KlientSerializer
+    name = 'klient-detail'
+    permission_classes = [permissions.IsAuthenticated]
 
-class UserDetail(generics.RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    name = 'user-detail'
 
-class NumeralFilter(NumberFilter):
-    from_cardinal = NumberFilter(field_name='cardinal', lookup_expr='gte')
-    to_cardinal = NumberFilter(field_name='cardinal', lookup_expr='lte')
+class NaprawaFilter(django_filters.FilterSet):
+    from_DataZlecenia = django_filters.DateFilter(field_name='DataZlecenia', lookup_expr='gte')
+    to_DataZlecenia = django_filters.DateFilter(field_name='DataZlecenia', lookup_expr='lte')
+
     class Meta:
-        model = Numeral
-        fields =['from_cardinal','to_cardinal']
+        model = Naprawa
+        fields = ['from_DataZlecenia', 'to_DataZlecenia']
 
-class VerbList(generics.ListCreateAPIView):
-    queryset = Verb.objects.all()
-    serializer_class = VerbSerializer
-    name = 'verb-list'
-    filter_fields = ['infinitive','past_tense','past_participle','translation']
-    search_fields = ['infinitive','past_tense','past_participle','translation']
-    ordering_fields = ['infinitive','past_tense','past_participle','translation']
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+class AutoList(generics.ListCreateAPIView):
+    queryset = Auto.objects.all()
+    serializer_class = AutoSerializer
+    search_fields = ['NrRejestracyjny']
+    filterset_fields = ['NrRejestracyjny']
+    ordering_fields = ['NrRejestracyjny']
+    name = 'auto-list'
+    permission_classes = [permissions.IsAuthenticated]
 
-class NumeralList(generics.ListCreateAPIView):
-    queryset = Numeral.objects.all()
-    serializer_class = NumeralSerializer
-    filter_class = NumeralFilter
-    name = 'numeral-list'
-    filter_fields = ['cardinal_number', 'ordinal_number', 'translation']
-    search_fields = ['cardinal_number', 'ordinal_number', 'translation']
-    ordering_fields = ['cardinal_number', 'ordinal_number', 'translation']
+
+class AutoDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Auto.objects.all()
+    serializer_class = AutoSerializer
+    name = 'auto-detail'
+    filter_fields = ['NrRejestracyjny']
+    search_fields = ['NrRejestracyjny']
+    ordering_fields = ['NrRejestracyjny']
+    permission_classes = [permissions.IsAuthenticated]
+
+class NaprawaList(generics.ListCreateAPIView):
+    queryset = Naprawa.objects.all()
+    serializer_class = NaprawaSerializer
+    name = 'naprawa-list'
+    filter_fields = ['DataZlecenia']
+    search_fields = ['DataZlecenia']
+    ordering_fields = ['DataZlecenia']
+    permission_classes = [permissions.IsAuthenticated]
+
+# def perform_create(self, serializer):
+# serializer.save(owner=self.request.user)
+
+class NaprawaDetail(generics.RetrieveAPIView):
+    queryset = Naprawa.objects.all()
+    serializer_class = NaprawaSerializer
+    name = 'naprawa-detail'
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class ApiRoot(generics.GenericAPIView):
     name = 'api-root'
+
     def get(self, request, *args, **kwargs):
-        return Response({'verb': reverse(VerbList.name, request=request),
-                         'numeral': reverse(NumeralList.name, request=request),
-                         'users': reverse(UserList.name, request=request)
-                          })
+        return Response({'klienci': reverse(KlientList.name, request=request),
+                         'auta': reverse(AutoList.name, request=request),
+                         'naprawy': reverse(NaprawaList.name, request=request)
+                         })
 
-'''@api_view(['GET','POST'])
-def question_list(request, format=None):
-    if request.method == 'GET':
-        questions = Question.objects.all()
-        seralizer  = QuestionSerializer(questions, many=True)
-        return Response(serializer.data)
 
-    elif request.method == 'POST':
-        serializer = QuestionSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET','PUT','DELETE'])
-def question_detail(request, pk, format=None):
-    try:
-        question = Question.objects.get(pk=pk)
-    except Question.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = QuestionSerializer(question)
-            return Response(serializer.data)
-
-    if request.method == 'PUT':
-        serializer = QuestionSerializer(question, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        question.delete()
-        return HttpResponse(status=status.HTTP_204)_NO_CONTENT)
-'''
