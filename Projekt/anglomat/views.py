@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 import django_filters
+from django_filters import AllValuesFilter, DateTimeFilter, NumberFilter, FilterSet
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.response import Response
@@ -13,7 +14,7 @@ class KlientList(generics.ListCreateAPIView):
     serializer_class = KlientSerializer
     search_fields = ['Imie', 'Nazwisko']
     filterset_fields = ['Imie', 'Nazwisko']
-    ordering_fields = ['Imie', 'Nazwisko']
+    ordering_fields = ['Nazwisko']
     name = 'klient-list'
 
 
@@ -23,9 +24,9 @@ class KlientDetail(generics.RetrieveUpdateDestroyAPIView):
     name = 'klient-detail'
 
 
-class NaprawaFilter(django_filters.FilterSet):
-    from_DataZlecenia = django_filters.DateFilter(field_name='DataZlecenia', lookup_expr='gte')
-    to_DataZlecenia = django_filters.DateFilter(field_name='DataZlecenia', lookup_expr='lte')
+class NaprawaFilter(FilterSet):
+    from_DataZlecenia = DateTimeFilter(field_name='DataZlecenia', lookup_expr='gte')
+    to_DataZlecenia = DateTimeFilter(field_name='DataZlecenia', lookup_expr='lte')
 
     class Meta:
         model = Naprawa
@@ -35,8 +36,8 @@ class NaprawaFilter(django_filters.FilterSet):
 class AutoList(generics.ListCreateAPIView):
     queryset = Auto.objects.all()
     serializer_class = AutoSerializer
-    search_fields = ['NrRejestracyjny']
-    filterset_fields = ['NrRejestracyjny']
+    search_fields = ['NrRejestracyjny', 'Model']
+    filterset_fields = ['NrRejestracyjny', 'Model']
     ordering_fields = ['NrRejestracyjny']
     name = 'auto-list'
 
@@ -45,9 +46,6 @@ class AutoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Auto.objects.all()
     serializer_class = AutoSerializer
     name = 'auto-detail'
-    filter_fields = ['NrRejestracyjny']
-    search_fields = ['NrRejestracyjny']
-    ordering_fields = ['NrRejestracyjny']
 
 
 class NaprawaList(generics.ListCreateAPIView):
@@ -58,9 +56,6 @@ class NaprawaList(generics.ListCreateAPIView):
     search_fields = ['DataZlecenia']
     ordering_fields = ['DataZlecenia']
 
-
-# def perform_create(self, serializer):
-# serializer.save(owner=self.request.user)
 
 class NaprawaDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Naprawa.objects.all()
